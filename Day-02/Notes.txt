@@ -1,0 +1,21 @@
+Get-Command -Name Get-service
+
+get-help Get-Service -Detailed
+
+get-help Get-Service -Online
+
+help Get-Service -Full
+
+help printer
+
+help Get-Service 
+
+Update-Help
+
+Get-Service -Name Spooler
+
+Start-Service -Name Spooler
+
+help Invoke-Command
+
+Invoke-Command -ComputerName xyz -Credential (Get-Credential) -ScriptBlock {Get-Service}
