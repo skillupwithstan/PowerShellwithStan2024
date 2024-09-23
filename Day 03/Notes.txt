@@ -1,0 +1,18 @@
+1. Prompt --> console input
+Ex: "Enter the service name to check the status:" --> winrm,spooler
+$servicename = read-host "Enter the service name to check the status:"
+2. File --> input file
+input.txt
+
+server1
+server2
+server3
+
+winrm
+spooler
+
+$inputfile = gc input.txt
+
+3. $service_data = "winrm","spooler"
+
+4. cmdb
