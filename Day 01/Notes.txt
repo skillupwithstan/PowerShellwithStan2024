@@ -1,0 +1,35 @@
+vRA/vRO
+Ansible, Salt, Puppet, Chef
+
+10.2.3.5
+d.d.d.d
+
+
+Syntax + Logic = solution
+
+System Center --> 
+
+
+compiler vs interpreter
+
+compiler --> it takes overall code and converted into machine code Ex: python, c, c++, Java, .NET
+interpreter --> it will convert the code line by line Ex: Powershell, bash shell
+
+after Powershell 5.1, they introduced Powershell 6 Core
+Powershell 7
+
+
+PowerShell ISE --> Integrated Scripting Environment
+
+VSC - visual studio code --> PowerShell, python, ansible
+
+Client, Server OS --> .NET Framework --> Powershell
+
+
+to check ps version use $psversiontable
+
+
+1. Dedicated server
+2. admin priv
+3. service account - password never expiry
+4. code repository - GitHub, GitLab, etc.,
