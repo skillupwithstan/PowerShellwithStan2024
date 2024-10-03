@@ -1,0 +1,107 @@
+$a = 10
+
+$a.GetType()
+
+
+[int]$port = Read-Host "Enter the port number"
+$port
+
+$port.GetType()
+
+$b = 10
+
+$a + $b 
+
+$MaximumHistoryCount = 10
+
+$port = 443
+$port
+
+$pwd = Read-Host "Enter the password" -AsSecureString
+$pwd
+
+
+$cred = Get-Credential
+
+$result = Invoke-Command -ComputerName 23.324.56.4 -Credential $cred -ScriptBlock { Set-ExecutionPolicy -ExecutionPolicy Unrestricted }
+
+Get-Service -ComputerName 23.43.4.3,34.45.32.5
+
+
+$server = Read-Host "Enter the server"
+
+Write-Host "The entered server is:$server" -NoNewline -ForegroundColor Green 
+
+Write-Host 'The entered server is: $server' -ForegroundColor Red 
+
+Write-Error "Error, Please check!"
+
+#Write-Debug "$server"
+
+Write-Warning "Please check!"
+
+### To check the powershell execution
+
+Get-ExecutionPolicy
+
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+
+
+## Service Management
+
+help service
+
+Get-Service
+
+Get-Service -Name WinRM
+
+Get-Service | Select-Object Name,Status
+
+
+# To know properties & methods of a variables & commands
+#Method - 1 
+
+Get-Service | Get-Member
+
+#Method - 2
+
+# Calling a Properties
+(Get-Service).DisplayName
+
+Get-Service | select Name,Status,DisplayName
+
+if((gsv Spooler| select status) -ne "Running")
+{
+    # Calling a Method
+    (Get-Service -Name Spooler).Start()
+}
+
+Start-Service Spooler 
+
+Stop-Service WinDefend,winrm
+
+Restart-Service Spooler -Force
+
+
+# Filtering the data
+
+Get-Service | Where-Object {$_.Status -eq "stopped"}
+
+<#
+Author: Arockia 
+Description: Add domain users
+Purpose: fdsgsg
+Input:
+Written Date: 29-09-2024
+Version: Initial (1.0)
+Modified By: 
+Modified Date:
+#>
+
+# To get service from the server
+Get-Service
+
+# Getting servername from the user
+$servername = Read-Host "Enter the server"
+
+Get-ChildItem
