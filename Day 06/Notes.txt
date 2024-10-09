@@ -1,0 +1,49 @@
+Notes:
+Exercise - 1 : Get the list of running services and display the headers with "Service Name, Service Status" and export the result into a file. - 5:15 pm
+Hint: Get-service, where, select,out-file
+
+solution:
+Get-Service | ?{$_.Status -eq "Running"} | select @{n="Service Name";e={$_.Name}},@{n="Service Status";e={$_.Status}} | Out-File C:/temp/service.txt
+
+
+Exercise - 2 : Get the numbers from the user and find max,min,sum values. - 5.20 pm
+Hint: Read-host, measure
+
+solution:
+$num = Read-Host "Enter the numbers"
+$num.Split(",") | measure -sum -Maximum -Minimum
+
+$num = 23,45,21,4,2,50,83,36
+$num | measure -sum -Maximum -Minimum
+
+Variable Overriding
+--------------------
+
+$a = 10
+$a = 20
+
+$a
+
+
+"server123:virtual:1vCPU:2GB RAM: 1 TB Disk"
+
+$currentdisk = 1 TB
+
+df
+dsf
+dsf
+dsf
+g
+
+$extendeddisk = 2 TB
+
+"server123:virtual:1vCPU:4GB RAM: 2 TB Disk"
+
+
+
+
+Shorthand Operator: += -= *= /=
+$a = 10
+$a = $a + 20
+
+$a += 20
