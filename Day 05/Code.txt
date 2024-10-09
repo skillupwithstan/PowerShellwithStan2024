@@ -1,0 +1,56 @@
+help process
+
+Get-Process | gm
+
+(gps).VM
+
+Get-Process | ?{$_.vm -gt 1000000} | Sort VM | select Name,VM -Last 10
+
+Get-Process | Sort PM | select Name,PM -Last 10
+
+
+Get-Process | select @{name="Process Name";expr={$_.Name}}
+
+Get-Process | Sort PM | select @{n="Process Name";e={$_.Name}},@{n="PM (MB)";ex={($_.PM)/1MB}} -Last 10
+
+
+# To display whole number
+Get-Process | Sort PM | select @{n="Process Name";e={$_.Name}},@{n="PM (MB)";ex={ "{0:N0}" -f ($_.PM/1MB)}} -Last 10
+
+
+# To display 2 numbers after the decimal point
+Get-Process | Sort PM | select @{n="Process Name";e={$_.Name}},@{n="PM (MB)";ex={ "{0:N2}" -f ($_.PM/1MB)}} -Last 10
+
+# To include specific users
+(Get-Process -IncludeUserName)
+
+
+#To export data into a file
+Get-Process | Sort PM | select @{n="Process Name";e={$_.Name}},@{n="PM (MB)";ex={ "{0:N2}" -f ($_.PM/1MB)}} -Last 10 | Out-File "C:\Users\Documents\process.txt" -Force -Append
+
+Get-Process | Sort PM | select @{n="Process Name";e={$_.Name}},@{n="PM (MB)";ex={ "{0:N2}" -f ($_.PM/1MB)}} -Last 10 | Export-Csv "C:\Users\Documents\process.csv" -Force
+
+# Formatting
+
+#Table 
+ft --> Format-Table
+#List
+fl --> Format-List
+#Wide
+fw --> Format-Wide
+
+Get-Service | Format-Table -Wrap -AutoSize | out-file 
+
+Get-Process | select Name,Vm,PM,Id
+
+gps | gm
+
+Get-Process | select *
+
+Get-Service | fl
+
+Get-process | Format-Wide -Column 4
+
+# Measure Object to know SUM,Avg, Max & min values
+
+Get-Process| Measure-Object -Property PM -Sum -Average -Maximum -Minimum
