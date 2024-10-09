@@ -1,0 +1,117 @@
+Get-Service | ?{$_.Status -eq "Running"} | select @{n="Service Name";e={$_.Name}},@{n="Service Status";e={$_.Status}} | Out-File C:/temp/service.txt
+
+$num = Read-Host "Enter the numbers"
+$num.Split(",") | measure -sum -Maximum -Minimum
+
+
+$num = 23,45,21,4,2,50,83,36
+$num | measure -sum -Maximum -Minimum
+
+
+# Date & Time
+
+Get-Date -Format "dd-MM-yyyy"
+
+Get-Date -Format "dd-MM-yyyy hh:mm:ss"
+
+Get-Date -Format "d-MMM-yy hh:mm:ss"
+
+Get-Date -Format "dd-MM-yyyy H:mm:ss"
+
+# d --> Day
+# M --> Month
+# y --> year
+# h --> 12 hour
+# H --> 24 hour
+# m --> min
+# s --> sec
+
+
+$dt = Get-Date
+
+$tz = (Get-TimeZone).Id
+
+$dt.ToString() + " " + $tz
+
+(Get-Date).AddDays(10)
+
+(Get-Date).AddHours(-24)
+
+
+Get-EventLog -LogName System -After (Get-Date).AddHours(-24) | where {$_.EntryType -eq "Error"}
+
+(Get-Date).ToLongDateString()
+(Get-Date).ToShortDateString()
+
+(Get-Date).ToLongTimeString()
+(Get-Date).ToShortTimeString()
+
+(Get-Date).GetDateTimeFormats()[86]
+
+(Get-Date).GetDateTimeFormats() | ?{$_ -like "*GMT"}
+
+
+Get-Date|gm | ft -AutoSize -Wrap
+
+get-date -Date "12/10/2023"
+
+
+# String Operations
+
+$server = "server01234.apac.com"
+
+$server.GetType()
+
+$server.Length
+
+$server.Replace("01234","1234")
+
+$server1 = $server.Replace("01234","1234")
+
+Write-Host "$server has been changed to $server1"
+
+$server.Replace(" ","")
+
+$server.ToLower()
+
+$server.ToUpper()
+
+$server.Split(".").GetType()
+
+
+write-host "HOSTNAME:" $server.Split(".")[0]
+
+$server.Split('.')[1,2] -join "."
+
+write-host "DOMAIN: $($server.Split('.')[1,2] -join '.')"
+
+#Convert String to Array
+$data = "server123:virtual:1vCPU:2GB RAM:1 TB Disk"
+$data.GetType()
+$data.Split(":")
+$data.Split(":").GetType()
+
+
+$data1 = @("server123","virtual","1vCPU","2GB RAM","1 TB Disk")
+$data1.GetType()
+
+$data1 = $data1 -join "-"
+
+
+$data1 = "server123","virtual","1vCPU","2GB RAM","1 TB Disk"#,445,$true,$null
+$data1.GetType()
+
+$data1 -join ":"
+
+# Array
+
+$array = @(100,200,300)
+$array.GetType() 
+
+$array[0]
+
+$array[1]
+
+$array[0] = 500
+
+$array[2] = 400
