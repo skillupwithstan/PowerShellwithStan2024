@@ -1,0 +1,183 @@
+$myArray = "Hello", 12, (Get-Date), $null, $true
+$myArray.Count
+
+$myArray[0] 
+$myArray[1]
+$myArray[-1]
+
+$myArray = $myArray[0..2] # $myArray[0,1,2]
+$myArray.Count 
+
+$myArray += 'new element' #$myArray = $myArray + "New value"
+$myArray.Count
+
+#strongly-typed array
+[Int[]]$myArray = 1,2,3
+$myArray += 12 # += --> Shorthand operator
+
+#To know the data type
+$array1 = [Int[]](1,2,3,4,5),"Hi"
+$array1.GetType()
+
+$array1 += “Google”
+$array1.GetType()
+
+
+$array = 12,24,35,5,4
+
+$array = @()
+
+$array += "af"
+
+Remove-Variable $array,$arockia
+
+
+#Hash values
+
+$person = @{}
+$person
+
+#Keys & Values
+
+$person.Age = 23 
+$person.Name = ‘Kumar’ 
+$person.Status = ‘Online’ 
+
+$person
+
+#method:1
+$person.Name
+$person.Status
+
+#method:2
+$person[‘Age’] 
+
+#method:3
+$info = ‘Age’
+$person.$info
+
+$person.Keys.Count
+$person.Values
+
+#Using Ordered Hash Tables
+
+$hash = @{Name=’Raja’; 
+Age=60; 
+Status=’Online’}
+$hash
+
+$hash = [ordered] @{Name=’Raja’; Age=60; Status=’Online’} 
+$hash
+
+$hash.Count
+
+#Converting Hash Tables to PS Objects
+#Method - 1
+
+$hash = @{Name=’Raja’; Age=60; Status=’Online’} 
+$hash.GetType()
+
+$obj = New-Object PSObject -Property $hash
+$obj
+$obj.GetType()
+
+#Method - 2
+
+$data = @{ 
+    LastName=’Kumar’
+    FirstName=’Rajesh’
+    Id=123 
+    }
+
+$data
+
+$myObject = [PSCustomObject]$data 
+$myObject
+$myObject.GetType()
+
+#Remove Keys from Hash Tables
+
+$myHash = @{
+Name = ‘Raja’ 
+ID = 12 
+Location = ‘Chennai’ 
+}
+$myHash
+
+$myHash.Remove(‘Location’) 
+$myHash
+
+
+13344545 / 1GB                                                                                              
+13344545 / 1GB -as [int]                                                                                      
+13344545 / 1GB -as [float]  
+[math]::Round(100.5080)
+                                                                                               
+[math]::Round(342425425/1GB,4)                                                                                
+[math]::Round(342425425/1GB,2)
+
+#:: --> scope resolution operator
+
+[void] [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic')
+
+$cn=[Microsoft.VisualBasic.Interaction]::InputBox('Enter Computer Name:')
+$cn 
+
+[Microsoft.VisualBasic.Interaction]::MsgBox("")
+
+$cn=[Microsoft.VisualBasic.Interaction]::InputBox('Enter Computer Name:','Computer Name','server123')
+$cn
+
+#File system handling
+
+help item
+help New-Item
+
+Get-ChildItem -Path D:
+
+ls --> Get-ChildItem
+mv --> Move-item
+cp -> Copy-item
+
+
+New-Item -Path "D:\TEST PS" -ItemType Directory
+
+New-Item -Path 'D:\TEST PS\123.txt' #-ItemType File
+
+Rename-Item 'D:\TEST PS' 'D:\Patching' -Force
+
+Rename-Item 'D:\Patching\123.txt' 'D:\Patching\precheck.txt'
+
+
+
+"This is a second line" | Set-Content D:\Patching\precheck.txt 
+
+"This is a third line" | Add-Content D:\Patching\precheck.txt
+
+
+Remove-Item D:\Patching\precheck.txt -Recurse
+
+Get-ChildItem D:\ -Recurse
+
+
+Get-Service | Format-Table -Wrap | Out-File D:\Patching\Precheck.txt 
+
+
+Get-Service | Out-File D:\Patching\precheck.txt 
+
+
+Get-Content D:\Patching\Precheck.txt
+
+(Get-Content D:\Patching\precheck.txt).Length
+
+get-service | Export-Csv D:\Patching\Precheck.csv -Append
+
+gsv |ft -Wrap | Out-File D:\Patching\Postcheck.txt 
+
+#Compare-Object
+
+compare (Get-Content D:\Patching\Precheck.txt) (gc D:\Patching\Postcheck.txt) | Out-File D:\Patching\result.txt
+
+#Get-Service | ConvertTo-Html | Out-File D:\Patching\test.html
+
+Get-Service | Out-GridView
