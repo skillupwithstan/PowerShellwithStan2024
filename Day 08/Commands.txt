@@ -1,0 +1,53 @@
+#File system handling
+
+help item
+help New-Item
+
+Get-ChildItem -Path D:
+
+ls --> Get-ChildItem
+mv --> Move-item
+cp -> Copy-item
+
+
+New-Item -Path "D:\TEST PS" -ItemType Directory
+
+New-Item -Path 'D:\TEST PS\123.txt' #-ItemType File
+
+Rename-Item 'D:\TEST PS' 'D:\Patching' -Force
+
+Rename-Item 'D:\Patching\123.txt' 'D:\Patching\precheck.txt'
+
+
+
+"This is a second line" | Set-Content D:\Patching\precheck.txt 
+
+"This is a third line" | Add-Content D:\Patching\precheck.txt
+
+
+Remove-Item D:\Patching\precheck.txt -Recurse
+
+Get-ChildItem D:\ -Recurse
+
+
+Get-Service | Format-Table -Wrap | Out-File D:\Patching\Precheck.txt 
+
+
+Get-Service | Out-File D:\Patching\precheck.txt 
+
+
+Get-Content D:\Patching\Precheck.txt
+
+(Get-Content D:\Patching\precheck.txt).Length
+
+get-service | Export-Csv D:\Patching\Precheck.csv -Append
+
+gsv |ft -Wrap | Out-File D:\Patching\Postcheck.txt 
+
+#Compare-Object
+
+compare (Get-Content D:\Patching\Precheck.txt) (gc D:\Patching\Postcheck.txt) | Out-File D:\Patching\result.txt
+
+#Get-Service | ConvertTo-Html | Out-File D:\Patching\test.html
+
+Get-Service | Out-GridView
