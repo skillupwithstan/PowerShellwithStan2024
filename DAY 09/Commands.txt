@@ -1,0 +1,62 @@
+WMI - Windows Management Instrumentation (Get-WmiObject --> gwmi)
+CIM - Common Information Model (Get-CimInstance --> gcim)
+
+The repository that Common Information Model (CIM) and Windows Management Instrumentation (WMI) 
+use is organized into namespaces. 
+A namespace is a folder that groups related items for organizational purposes.
+
+Namespaces contain classes.
+classes contains properties & methods
+
+
+root
+-- namespaces (cimV2)
+      -- classes (Win32_OperatingSystem)
+          -- properties (os name)
+	  -- methods (reboot,shutdown)
+
+
+# WMI CONCEPTS
+===============
+
+#To list all classes in cim namespace
+
+Get-WmiObject -List -Namespace root\cimv2
+
+(gwmi -List).count
+
+#To list Namespaces
+
+Get-WmiObject -Query “Select * from __Namespace” -Namespace Root | Select Name
+
+Get-CimInstance -Namespace root -ClassName __Namespace
+
+
+#To find classes
+Get-WmiObject -Class *operating* -List
+
+Get-WmiObject -Class *bios* -List
+
+#To get OS related information
+
+Get-WmiObject -Class Win32_OperatingSystem | select *
+
+Get-WmiObject -ComputerName localhost,tst12,tst4 -Credential (Get-Credential) -Class Win32_OperatingSystem | select LastBootUpTime
+
+Get-CimInstance -Class Win32_OperatingSystem | select LastBootUpTime,Status,Name
+
+gwmi Win32_OperatingSystem | select LastBootuptime,status,name
+
+Get-CimInstance -Class Win32_OperatingSystem | Get-Member
+
+
+
+gwmi -Namespace root\cimv2 -Class win32_operatingsystem 
+
+
+gwmi -Namespace root\securitycenter2 -List 
+
+gwmi -Namespace root\securitycenter2 -Class *antivirus* -List
+
+
+gwmi -Namespace root\securitycenter2 -Class AntiVirusProduct | select displayname
