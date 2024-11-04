@@ -1,0 +1,171 @@
+$condition = $false
+if ( $condition )
+{
+    Write-Output "The condition was true"
+}
+else
+{
+    Write-Output "The condition was false"
+}
+
+##########################################
+
+[int] $userdata = Read-Host "Enter the number"
+if ($userdata -eq 5)
+{
+    Write-Host "User Entered Value: $userdata is equal to 5."
+}
+elseif($userdata -lt 10)
+{
+   if($userdata -eq 8)
+   {
+        "The value is 8"
+   }
+   Write-Host "User Entered Value: $userdata is less than 10."
+}
+else
+{
+    Write-Host "User Entered Value: $userdata"
+}
+
+Write-Host "End of the script"
+
+$a = 3
+switch ($a) {
+    1 {"It is one."}
+    2 {"It is two."}
+    3 {"It is three."}
+    4 {"It is four."}
+}
+
+$servername = "xyz.apac.com"
+$servers = $servername.Split(".")
+
+
+$servername = Read-Host "enter the server fqdn"
+$domain = $servername.Split(".")[1]
+
+if($domain -eq "apac")
+{
+    "This is APAC server"
+}
+elseif ($domain -eq "emea")
+{
+    "This is a EMEA server"
+}
+else
+{
+    "This is a $domain server"
+}
+
+switch ($servername.Split(".")[1])
+{
+    "apac" 
+    {
+        Write-Host "APAC domain" 
+    }
+    "emea" 
+    { 
+        "EMEA Domain" 
+    }
+    default 
+    { 
+        $servername.Split(".")[1] 
+    }
+}
+
+
+#Loop --> iteration --> for, foreach, while, do-while 
+
+
+$i=0
+$varray = 10,20,30,40
+foreach ($val in $varray) {
+  if ($val -eq 30) {
+    break
+  }
+  $i++
+}
+Write-Host "30 was found in array index $i"
+
+#=========
+$ctr = 0
+while ($ctr -lt 10)
+{
+    $ctr += 1  # $ctr++ ==> $ctr = $ctr + 1
+    if ($ctr -eq 5)
+    {
+        continue
+    }
+
+    Write-Host $ctr
+}
+
+#===========================
+
+$a = 1 
+
+DO
+{
+
+"Starting Loop $a"
+
+$a
+
+$a++
+
+"Now `$a is $a"
+
+"variable `$a value is: `n" + $a
+
+#`n --> new line
+
+} While ($a -le 5)
+
+#=============
+
+$val = 2
+while($val -ne 3)
+{
+    $val++
+    Write-Host $val
+}
+
+##########################
+
+$in = Read-Host "Enter the service name"
+
+$b = $in.Split(",")
+$b.Count
+
+for($i=0;$i -lt $b.Count)  
+{
+    Get-Service -Name $b[$i]
+    $i++  # $i = $i + 1
+}
+
+#======================================
+
+#If condition & Foreach loop
+$Computers = "localhost","12.4.3.2"
+
+foreach($Computer in $Computers)
+{
+    $osname = Get-WmiObject Win32_OperatingSystem -ComputerName $Computer | Select Caption
+    $osname
+
+    if($osname -like "*Windows 10*")
+    {
+        Write-Host "OS Name of $Computer is:" $osname.Caption
+        
+    }
+    elseif($osname -like "*Windows 2016*") 
+    {
+    
+        "Windows 2016"
+    }
+    else
+    {
+        "Incorrect Name"
+    }
+}
