@@ -133,26 +133,3 @@ $body += "</html>"
 Send-MailMessage -To "kumar@gmail.com" -From "kumar@gmail.com" -Subject "Test Mail" -SmtpServer "mail.google.com" -Port 25 -Body $body -Credential $MyCredential -Attachments D:\serverlist.txt
 
 ###################################################
-
-#API Management
-#==============
-
-# API - Application Programming Interface 
-# SOAP (Simple Object Access Protocol) - Function-driven
-# REST (Representational State Transfer) - Data-driven
-
-Invoke-WebRequest -Uri "http:\\servicenow.com" -Credential (Get-Credential) -Method Get
-
-$result = Invoke-WebRequest https://reqres.in/api/users?page=2 -Method Get
-$result.content
-
-$result1 = Invoke-RestMethod "https://reqres.in/api/users?page=2" -Method Get
-$result1.data.email #| where {$_ -like "michael*"}
-
-foreach($i in $result1.data)
-{
-    if($i.first_name -like "Michael*")
-    {
-       $i.email
-    }
-}
