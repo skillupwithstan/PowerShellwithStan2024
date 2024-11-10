@@ -1,0 +1,218 @@
+#Clean Temp folder
+
+$cutoff = (Get-Date).AddDays(-30)  #(Get-Date) - (New-TimeSpan -Days 30) 
+
+$before = (Get-ChildItem $env:temp | Measure-Object Length -Sum).Sum
+
+Get-ChildItem | gm
+
+Get-ChildItem $env:temp | Where-Object { $_.Length -ne $null } |
+Where-Object { $_.LastWriteTime -lt $cutoff } |      
+Remove-Item -Force -ErrorAction SilentlyContinue -Recurse
+
+$after = (Get-ChildItem $env:temp | Measure-Object Length -Sum).Sum 
+
+$freed = $before - $after
+
+'Cleanup freed ' + ($freed/1MB)
+
+###############################################
+
+if(Test-Path "D:\serverlist.txt")
+{
+    Write-Debug "The input file is present"    
+}
+else
+{
+    Write-Host "File not found" -ForegroundColor Blue
+    #Write-Error "File not found"
+}
+
+###############################################
+#Server reachable check
+
+$get_arr = "localhost",12345,"CH425132L" #Get-Content "D:\serverlist.txt"
+#$ErrorActionPreference = Stop
+$ping = ""
+$nping = ""
+
+foreach($s in $get_arr)
+{
+    try
+    {
+        Test-Connection $s -Count 1 -ErrorAction Stop
+        $ping = $ping + $s + "`n"
+        #try
+        #{
+        #    if()
+        #    for()
+        #    Test-Path C:\sfdsf -ErrorAction stop
+        #}
+        #catch
+        #{
+        #    if()
+        #    for()
+        #}
+    }
+    catch
+    {
+        #$_.Message
+
+        $nping = $nping + $s + "`n"
+    }
+}
+
+#@{'Pingable' = $ping ;'Unpingable' = $nping}
+
+$ppt=[pscustomobject]@{
+'Pingable' = $ping
+'Unpingable' = $nping
+}
+
+$ppt | ft -Wrap  | Out-File "D:\output.txt"
+
+###############################################
+
+function Get-NotepadProcess { Get-Process notepad }
+
+###############################################
+
+function Get-DiskInventory
+{
+    <#
+    .Synopsis   
+        To get disk details
+    .DESCRIPTION   
+        Get server disk allocation
+    .EXAMPLE
+        Example of how to use this function 
+    .EXAMPLE  
+        Another example of how to use this function 
+    .INPUTS   
+        Inputs to this function (if any) 
+    .OUTPUTS   
+        Output from this function (if any) 
+    .NOTES   
+        General notes about Disk Data
+    .COMPONENT   
+        The component this function belongs to 
+    .ROLE   
+        The role this function belongs to 
+    .FUNCTIONALITY   
+        The functionality that best describes this function 
+    #>
+
+    #paramters - keyword
+    param(
+            $cname = 'localhost',
+            [int]$dtype = 3
+    )
+
+    gwmi win32_logicaldisk -ComputerName $cname -filter "drivetype=$dtype" |
+    sort DeviceID | select DeviceID, @{name='FreeSpace (MB)';expression={$_.Freespace / 1MB -as [int]}},
+    @{name='Total Size (GB)';expression={$_.Size / 1GB  -as [int]}},
+    @{name='%Free';expression={$_.Freespace / $_.Size * 100  -as [int]}}
+}
+
+#Calling a function
+#Get-DiskInventory -cname server1 -dtype 3
+
+###############################################
+
+function Get-NamedService
+{  
+    param ($servicename)
+    
+    if ($servicename -eq $null)  
+    {    
+        Write-Host -ForegroundColor Red ‘Specify a service name!’    
+        return 
+    }
+    else
+    {
+        "You have selected $servicename service"
+         Get-Service $servicename
+    }
+  #  Get-Service $name
+}
+
+
+#To declare mandatory parameter in functions
+
+function Test-EventLog
+{  
+    param  ([Parameter(Mandatory)] $logname)
+
+    “You entered $logname.” 
+
+    Get-EventLog -LogName $logname -Newest 5
+}
+
+
+#Positional Parameters
+function Test-Function3
+{  
+    param  ([Parameter(Position=1)] [string[]]$ComputerName='localhost',
+    [Parameter(Position=0)] $Type
+    )
+
+  “You entered $ComputerName, $Type.” 
+}
+
+#Cmdletbind Diff
+function Test-Function 
+{
+    param  ( $MyParameter = "Hello") 
+
+    Write-Host "$MyParameter"
+}
+
+function Test-Function1
+{  
+    [CmdletBinding()]  
+    param  ( $MyParameter ) 
+
+    Write-Host "$MyParameter"
+}
+
+function Test-Function 
+{  
+    [CmdletBinding()]  
+    param  ( $MyParameter )
+
+    Write-Verbose “Starting”  
+    “You entered $MyParameter”  
+    Write-Verbose “Ending” 
+}
+
+
+function Test-Pipeline 
+{  
+    param( [Parameter(ValueFromPipeline)]  $InputObject )
+
+    process 
+    {    
+        “Working with $InputObject” 
+    } 
+}
+
+############################
+
+Error handling <--> Exception handling
+--------------------------------------
+
+try
+{
+ Test-Connection $servers -ErrorAction Stop  
+ dsfdsg
+ dsg
+ $db.open() 
+}
+catch
+{
+    "this is not reachable"
+}
+finally
+{
+    $db.close()
+}
