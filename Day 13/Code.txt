@@ -1,0 +1,158 @@
+############################################################
+#function Get-SoftwareInfo
+#{
+    param(
+    [Parameter(Mandatory=$true)] $hostnameFqdn # = "localhost"
+    )
+
+    $returnpackages = @()             
+    $packages = Get-WmiObject -Class Win32_Product -ComputerName $hostnameFqdn | select-object name,version
+    $returnpackages = $packages
+
+    $sccm_client = gwmi -Namespace "root\ccm" -Class sms_client -ComputerName $hostnameFqdn -ErrorAction SilentlyContinue | select @{ n="name";e={"SCCM Client"}}, @{ n="version";e={$_.ClientVersion}}
+    $returnpackages += $sccm_client # $a = $a + $b ==> $a += $b
+    $returnpackages
+#}
+############################################################
+
+$wmiOS = Get-WmiObject -Class Win32_OperatingSystem;
+$OS = $wmiOS.caption;
+
+#$OS = gwmi win32_operatingsystem | select Caption
+
+$serviceStatus = Get-Service -Name "WinDefend" | Select status
+#($serviceStatus).Status
+
+#Write-Output "Windows Defender Status: ($serviceStatus).Status"
+
+Write-Output "Windows Defender Status: $(($serviceStatus).Status)"
+
+$status = @{"OS" = $OS; "Win Defender Status" = ($serviceStatus).Status}
+[pscustomobject]$status
+
+#############################################################
+#Software Installation
+
+param([String]$targetPath,
+[String]$fileName,
+[String]$proxyServer,
+[String]$groupingTags)
+
+$exePath=$targetPath+'\'+$fileName
+#Start-Process -FilePath "C:\Program Files\Google\Chrome\Application\chrome.exe" -ArgumentList "http://www.google.com"
+Start-Process -FilePath $exePath -ArgumentList "/install /quiet /norestart APP_PROXYNAME=$proxyServer APP_PROXYPORT=3128 GROUPING_TAGS=$groupingTags > C:\Temp\output_CrowdStrikeInstallation.txt"
+
+<#
+msiexec.exe [/i][/a][/j{u|m}][/x] <path_to_package>
+
+/i  -->	Specifies normal installation.
+/a  -->	Specifies administrative installation.
+/ju -->	Advertise the product to the current user.
+/jm	--> Advertise the product to all users.
+/x	--> Uninstalls the package.
+path_to_package -->	Specifies the location and name of the installation package file.
+#>
+#############################################
+$user = 'Arockia' 
+$str2 = ConvertTo-SecureString 'Password2!' -AsPlainText -Force
+$pw = Read-Host "Enter the password" -AsSecureString
+
+#Method - 1
+param($password)
+
+$pwd = $password | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString
+$MyCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $user, ($pwd | ConvertTo-SecureString)
+
+#Method - 2 
+
+$pwd = "Password@123" | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString | Out-File pwd.txt
+$MyCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $user, ( Get-Content pwd.txt | ConvertTo-SecureString)
+
+gwmi -Class win32_operatingsystem -ComputerName server01 -Credential $MyCredential
+
+##############################################################
+#Basic excel operations
+
+$Excel = New-Object -ComObject Excel.Application
+$Excel.Visible=$true
+$Excel1 = $Excel.Workbooks.Add()
+$sheet = $Excel1.Worksheets.Item(1)
+$sheet.Name = 'Service Details'
+$row=1
+$sheet.Cells.Item($row,1) = 'Service Name'
+$sheet.Cells.Item($row,2) = 'Service Status'
+$val= gsv
+foreach($i in $val)
+{
+    $row=$row+1
+    $sheet.Cells.Item($row,1) = $i.Name
+    $sheet.Cells.Item($row,2) = $i.Status.ToString()
+}
+
+$Excel1.SaveAs("D:\ServiceDetails.xlsx")
+$Excel.Quit()
+
+###########################################################
+
+#outlook - interoperability
+
+$olFolders = “Microsoft.Office.Interop.Outlook.olDefaultFolders” -as [Type]
+$outlook = New-Object -comobject outlook.application
+$namespace = $outlook.GetNameSpace(“MAPI”)
+$folder = $namespace.getDefaultFolder($olFolders::olFolderInBox)
+#$folder = $namespace.getDefaultFolder($olFolders::olFolderSentMail)
+$folder.items | Select-Object Subject, ReceivedTime, SenderName -First 5 | fl
+
+
+###############################################################
+
+$gsv_details = gsv
+
+#To Send mail
+#Option - 1 - Plain Text
+$body = {
+"Hello $name, `n Please find the service details. $gsv_details `n regards,"
+}
+
+#Option - 2 - HTML Text
+
+$servername = Read-Host "Enter the server"
+$osname = gwmi win32_operatingsystem | select caption
+
+
+$body =  "<html>"
+$body += "<head>"
+$body += "<table>"
+$body += "<tr> Server Name </tr>"
+$body += "<td> $servername </td>"
+$body += "<tr> OS Name </tr>"
+$body += "<td> $osname </td>"
+$body += "</table>"
+$body += "</html>"
+
+Send-MailMessage -To "kumar@gmail.com" -From "kumar@gmail.com" -Subject "Test Mail" -SmtpServer "mail.google.com" -Port 25 -Body $body -Credential $MyCredential -Attachments D:\serverlist.txt
+
+###################################################
+
+#API Management
+#==============
+
+# API - Application Programming Interface 
+# SOAP (Simple Object Access Protocol) - Function-driven
+# REST (Representational State Transfer) - Data-driven
+
+Invoke-WebRequest -Uri "http:\\servicenow.com" -Credential (Get-Credential) -Method Get
+
+$result = Invoke-WebRequest https://reqres.in/api/users?page=2 -Method Get
+$result.content
+
+$result1 = Invoke-RestMethod "https://reqres.in/api/users?page=2" -Method Get
+$result1.data.email #| where {$_ -like "michael*"}
+
+foreach($i in $result1.data)
+{
+    if($i.first_name -like "Michael*")
+    {
+       $i.email
+    }
+}
