@@ -1,0 +1,231 @@
+#Modules
+
+(Get-Module -ListAvailable).count
+
+Get-Module -Name ActiveDirectory 
+
+Get-Module Microsoft.PowerShell.Utility | select -ExpandProperty ExportedCommands
+
+Get-Command -Module Microsoft.PowerShell.Utility
+
+$env:PSModulePath -split ";"
+
+#Remove-Module -Name PowershellGet
+
+Import-Module PowershellGet
+
+
+
+
+$AdminServer = New-PSSession -ComputerName 52.190.24.37 -Credential (Get-Credential)
+Import-Module -Name ActiveDirectory -PSSession $AdminServer
+
+get-ADuser
+
+
+
+Install-Module -Name ActiveDirectory
+
+#Server Features page --> Remote Server Administration Tools --> Role Administration Tools --> AD DS and AD LDS Tools, then select Active Directory module for Windows Powershell --> Next --> Install
+
+Install-Module -Name ActiveDirectory -Scope CurrentUser
+
+Uninstall-Module ActiveDirectory
+
+
+Get-Command -Module ActiveDirectory
+
+
+Get-ADComputer -Filter "*"
+
+
+Get-ADComputer -filter 'name -like "server01"' | select name,OperatingSystem,IPv4Address
+
+Get-ADComputer -filter {OperatingSystem -Like '*Windows 10*'} -property * | select name, operatingsystem
+
+
+Remove-ADComputer -Identity "SRV04"
+
+
+Get-ADOrganizationalUnit -Filter * | fl Name,DistinguishedName
+
+
+#Adding users into a Group
+Add-ADGroupMember -Identity TestGroup -Member Senthil
+
+Get-ADUser "<Name>" -Properties LastLogonDate | FT
+
+Get-ADUser "<Name>" -Properties * | Select name, department, title
+
+Get-ADUser -SearchBase “OU=ADPRO Users,dc=ad,dc=activedirectorypro.com” -Filter *
+
+get-Aduser -Filter {name -like "*arockia*"}
+
+Get-ADUser -Filter {(Enabled -eq $true)} -Properties LastLogonDate | select samaccountname, Name, LastLogonDate | Sort-Object LastLogonDate
+
+#Get All Disable User Accounts
+
+Search-ADAccount -AccountDisabled | select name
+
+#Disable User Account
+
+Disable-ADAccount -Identity allen
+
+#Enable User Account
+
+Enable-ADAccount -Identity allen
+
+#Get All Accounts with Password Set to Never Expire
+
+get-aduser -filter * -properties Name, PasswordNeverExpires | where {$_.passwordNeverExpires -eq "true" } | Select-Object DistinguishedName,Name,Enabled
+
+#Find All Locked User Accounts
+Search-ADAccount -LockedOut
+
+#Unlock User Account
+
+Get-ADUser -Identity Arockia | Unlock-ADAccount
+
+Unlock-ADAccount –Identity Suresh
+
+#List all Disabled User Accounts
+
+Search-ADAccount -AccountDisabled
+
+#Force Password Change at Next Login
+
+Set-ADUser -Identity username -ChangePasswordAtLogon $true
+
+#Display Basic Domain Information
+Get-ADDomain
+
+#Get all Domain Controllers by Hostname and Operating
+Get-ADDomainController -filter * | select hostname, operatingsystem
+
+#Get all Fine Grained Password Policies
+Get-ADFineGrainedPasswordPolicy -filter *
+
+#Get Domain Default Password Policy
+Get-ADDefaultDomainPasswordPolicy
+
+
+
+
+
+
+
+##############################
+
+$ErrorActionPreference = 'SilentlyContinue'
+$ServerName = Read-Host "Enter Server Name"
+$ADObj = Get-ADComputer -Identity $ServerName
+
+If ( $ADobj -ne $null)
+{
+    try{
+        $ADObj | Remove-ADComputer
+
+        if ($?) 
+        {
+            Write-Host  $ADObj.Name 'AD Computer Object Found and deleted Succesfully'
+        }
+        else 
+        {
+            Write-Host  $ADObj.Name 'AD Object deletion Failed'
+        }
+
+        <#
+        $result = Get-ADComputer -Identity $ServerName
+
+        if($result -eq "")
+        {
+            "$ServerName is removed successfully!"
+        }
+        else
+        {
+           "$ServerName is not removed!"
+        }
+        #>
+    }
+    catch
+    {
+        Write-Host $_.Exception.Message
+    }
+}
+else
+{
+    Write-Host $ServerName 'AD Computer Object Not Found'
+}
+
+##############################
+Module File extentions
+======================
+.psm1
+.psd1
+.psxml1
+
+Script File Extention --> .ps1
+
+Get-module --> To get the specific module
+
+1. Install-module -Name <Module Name>
+2. import-module -name <module name>
+
+##########################################
+#Exercise Scripting:
+#-------------------------
+
+#Input - D:\serverlist (server01,server02)
+#Output - Server Name, IP Address, OS Name, LastBootup, Total Memory (GB), Free Memory %, Last Hotfix Date, Hotfix ID, AV Name, AV Version  
+
+if(Test-Path C:\Users\X80119107\Documents\process.txt)
+{
+    $serverlist = Get-Content C:\Users\X80119107\Documents\process.txt
+    if($serverlist.Length -gt 0)
+    {
+        $serverdetails = @() 
+        foreach($server in $serverlist)
+        {
+            if(Test-Connection $server -Quiet)
+            {
+               #-ComputerName $server
+               $ipaddress = Get-WmiObject -Class Win32_networkadapterconfiguration -Filter 'IPEnabled=True' | Select-Object -ExpandProperty IPaddress
+               $ipaddress = $ipaddress[0]
+               $os_bootuptime = gcim  -Class win32_operatingsystem | select Caption,Lastbootuptime
+               $memoryinfo = Get-WmiObject win32_logicaldisk  | select Name,@{n="TotalMemory(GB)";e={[int]($_.size/1gb)}},@{n="Free Space in %";e={[float]$_.freespace/$_.size*100}}
+               $hotfixinfo = Get-HotFix |select hotfixid, InstalledOn -First 1
+               $avdetails = Get-CimInstance  -Namespace "root\SecurityCenter2" -ClassName AntiVirusProduct | select displayname,timestamp
+
+               $serverinfo = [ordered] @{
+                   "Server Name" = $server;
+                   "IP Address"  = $ipaddress;
+                   "OS Name" = $os_bootuptime.Caption;
+                   "Last bootup Time" = $os_bootuptime.Lastbootuptime;
+                   "Disk Name" = $memoryinfo.Name | Out-String; 
+                   "Total Size" = $memoryinfo."TotalMemory(GB)"|Out-String;
+                   "Free %" = $memoryinfo."Free Space in %"|Out-String;
+                   "Latest HotFix ID" = $hotfixinfo.hotfixid;
+                   "HF Installed On" = $hotfixinfo.InstalledOn;
+                   "AV Name" = $avdetails.displayname;
+                   "AV Installation Date" = $avdetails.timestamp;
+               }
+
+               $serverdetails += [pscustomobject]$serverinfo
+            }
+            else
+            {
+                Write-Host "$server is not reachable" -ForegroundColor Red
+            }
+        }
+
+        $serverdetails | Export-Csv C:\Users\X80119107\Documents\serverinfo.csv -NoTypeInformation
+    }
+    else
+    {
+        Write-Host "There is no server information available on the input file" -ForegroundColor Red 
+    }
+}
+else
+{
+    Write-Host "Please check the input file!"  -ForegroundColor Red 
+}
