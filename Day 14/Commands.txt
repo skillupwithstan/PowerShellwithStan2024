@@ -1,0 +1,65 @@
+#API Management
+#==============
+
+# API - Application Programming Interface 
+# SOAP (Simple Object Access Protocol) - Function-driven
+# REST (Representational State Transfer) - Data-driven
+
+Invoke-WebRequest -Uri "http:\\www.google.com" -Method Get
+
+$result = Invoke-WebRequest https://reqres.in/api/users?page=2 -Method Get
+$result.content
+
+$result1 = Invoke-RestMethod https://reqres.in/api/users?page=2 -Method Get
+$result1.data.email #| where {$_ -like "michael*"}
+
+foreach($i in $result1.data)
+{
+    if($i.first_name -like "Michael*")
+    {
+       $i.email
+    }
+}
+
+
+$cred = (Get-Credential)
+
+$session = New-PSSession -ComputerName localhost -Credential $cred 
+
+Enter-PSSession -ComputerName localhost -Credential $cred  #-Session $session 
+
+gsv
+
+Exit-PSSession
+
+
+$server = Get-Content serverlist.txt
+foreach($s in $server)
+{
+   $result += Invoke-Command -ComputerName $s -Credential $cred -ScriptBlock {
+   #Get-Service winrm
+   gwmi win32_product | where {$_.Name -like "Java*"} | select Version
+
+   #Get-HotFix -Id KB5044020
+
+
+   }
+}
+
+$result | Out-File result.txt
+
+
+Invoke-Command -ComputerName $s -Credential $cred -ScriptBlock {gsv winrm;gps notepad;Get-EventLog -LogName Application -Newest 5}
+
+
+$script = {
+gsv winrm
+gps notepad
+Get-EventLog -LogName Application -Newest 5
+}
+
+Invoke-Command -ComputerName $s -Credential $cred -ScriptBlock $script 
+
+$server = "server1,server3,server4"
+
+Invoke-Command -ComputerName $server -Credential $cred -ScriptBlock $script -ThrottleLimit 10
