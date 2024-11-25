@@ -1,0 +1,79 @@
+Automation Types: Semi-Automated, End to end automation
+
+Orchestration Tools/Workflow Management Tools: 
+
+VMware --> vRO/vRA (vRealize Suite --> vRealize Orchestrator - vRealize Automation)
+HPE --> HPOO
+Microsoft --> SCORCH
+ServiceNow --> SNOW Workflow
+CommVault --> Commvalut Workflow
+NetApp --> NetApp workflow
+RedHat --> Ansible Controller
+
+
+Task: Windows Defender service stopped
+
+Start  ---> End
+
+
+Start --> Fetch the tickets --> Validate the ticket --> service managment --> get the service and get the server name --> login server --> check the status of defender --> validate the service --> start the service --> validate it --> update worknotes on ticket --> ticket status "closed"  --> End
+                                          --> process managment
+                                          --> application management
+
+Configuration Management: DevOps - Ansible, Salt Stack, Puppet, Chef
+
+Day 0 --> New VM Deployment
+Day 1 --> Post config.
+Day 2 --> Ad-hoc requests
+
+
+Ansible Core --> Free
+Ansible Controller/Ansible Tower --> Paid
+
+Ansible --> win_command, win_shell, win_script
+
+Exception Handling
+------------------
+
+10/0 --> 
+
+if( $n != 0)
+{
+10/$n
+}
+
+$array = "df",234,45
+
+if($array.length)
+
+$array[0] ==> df
+$array[2] ==> 45
+$array[3] ==> Index outofbound
+
+try
+{
+  try
+  {
+
+  }
+  catch
+  {
+
+  }
+}
+catch
+{
+  try
+  {
+
+  }
+  catch
+  {
+
+  }
+}
+finally
+{
+
+
+}
